@@ -20,7 +20,7 @@ html, body {
   overflow: hidden;
 }
 
-/* Gumpalan Awan Putih Siang Hari */
+/* Awan Putih Siang Hari */
 .daytime-clouds {
   position: absolute;
   width: 100%;
@@ -40,7 +40,7 @@ html, body {
   z-index: 10;
 }
 
-/* Overlay Estetik Siang Hari */
+/* Overlay Estetik Pelangi Siang */
 .overlay {
   position: absolute;
   top: 2rem;
@@ -51,13 +51,13 @@ html, body {
 }
 
 h1 {
-  font-size: 2.4rem;
+  font-size: 2.5rem;
   font-weight: 900;
   letter-spacing: 4px;
-  background: linear-gradient(90deg, #1e3799, #0c2461, #b71540, #e55039);
+  background: linear-gradient(90deg, #eb2f06, #fa983a, #f6b93b, #78e08f, #38ada9, #4a69bd, #6a89cc, #b71540);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.9));
+  filter: drop-shadow(0 2px 10px rgba(255, 255, 255, 0.95));
 }
 
 .sub {
@@ -68,13 +68,13 @@ h1 {
   font-weight: 600;
 }
 
-.day-badge {
+.rainbow-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   margin-top: 10px;
   padding: 5px 16px;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(74, 144, 226, 0.4);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   border-radius: 999px;
