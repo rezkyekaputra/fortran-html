@@ -3,36 +3,38 @@
 <head>
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-  <title>錦冠菊 · 日本の花火 (Nishiki Kamuro Photorealistic) 🎆</title>
-  <link rel='stylesheet' href='fireworks.css?v=photoreal_v1'>
+  <title>錦冠菊・神威 (Kamuro Extreme Shockwave) 🎆💥</title>
+  <link rel='stylesheet' href='fireworks.css?v=kamuro_extreme'>
 </head>
 <body>
-  <div class='sky-ambient'></div>
+  <div class='world-3d' id='world3d'>
+    <div class='sky-ambient'></div>
+    <div class='shockwave' id='shockwave'></div>
 
-  <div class='overlay'>
-    <h1>錦冠菊 · 日本の花火</h1>
-    <p class='sub'>NISHIKI KAMURO · PHOTOREALISTIC WEAKING WILLOW & JEWEL STREAMERS</p>
-    <div class='meta'>
-      <span>⚡ Physics: GNU Fortran 14.3.1</span>
-      <span>·</span>
-      <span>🎨 Style: Dart Sass 1.107.1</span>
-      <span>·</span>
-      <span>🔥 Additive Trail Physics</span>
+    <div class='overlay'>
+      <h1>錦冠菊・神威 · 極上花火</h1>
+      <p class='sub'>KAMURO EXTREME · SEDOV BLAST SHOCKWAVE & SUB-BASS ACOUSTIC ENGINE</p>
+      <div class='audio-pill' id='audioToggle'>
+        <span id='audioIcon'>🔊</span>
+        <span id='audioText'>Suara Dentuman Sub-Bass: AKTIF (Klik Layar)</span>
+      </div>
     </div>
-  </div>
 
-  <canvas id='hanabiCanvas' class='hanabi-canvas'></canvas>
+    <canvas id='hanabiCanvas' class='hanabi-canvas'></canvas>
 
-  <div class='city-silhouette'>
-    <div class='bridge-glow'></div>
-    <div class='bridge-glow-2'></div>
-    <div class='city-lights'></div>
-    <div class='river-reflection'></div>
+    <div class='city-3d'>
+      <div class='bridge-glow'></div>
+      <div class='bridge-glow-2'></div>
+      <div class='city-lights'></div>
+      <div class='river-reflection'></div>
+    </div>
   </div>
 
   <script>
     const canvas = document.getElementById('hanabiCanvas');
     const ctx = canvas.getContext('2d');
+    const shockwave = document.getElementById('shockwave');
+    const world3d = document.getElementById('world3d');
 
     function resize() {
       canvas.width = window.innerWidth;
@@ -40,6 +42,71 @@
     }
     window.addEventListener('resize', resize);
     resize();
+
+    // 3D Mouse Parallax Tilt (Efek Kedalaman Kamera)
+    window.addEventListener('mousemove', (e) => {
+      const rotX = (e.clientY / window.innerHeight - 0.5) * -12;
+      const rotY = (e.clientX / window.innerWidth - 0.5) * 12;
+      world3d.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)';
+    });
+
+    // ==========================================
+    // WEB AUDIO SUB-BASS BOOM SYNTHESIZER (NOL FILE AUDIO)
+    // Menghasilkan Dentuman Meriam Menggelegar
+    // ==========================================
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playBoomSound() {
+      if (!soundEnabled || !audioCtx) return;
+      const t = audioCtx.currentTime;
+      // Sub-bass thump (45Hz down to 20Hz)
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(55, t);
+      osc.frequency.exponentialRampToValueAtTime(18, t + 1.2);
+      gain.gain.setValueAtTime(0.8, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.6);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 1.7);
+
+      // Concussive Crackle (Pink Noise burst)
+      const bufferSize = audioCtx.sampleRate * 0.4;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
+      }
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = buffer;
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.35, t);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      whiteNoise.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      whiteNoise.start(t);
+    }
+
+    // Trigger Sedov Shockwave Lens Ring
+    function triggerShockwave(x, y) {
+      shockwave.style.left = `${x}px`;
+      shockwave.style.top = `${y}px`;
+      shockwave.classList.remove('active');
+      void shockwave.offsetWidth;
+      shockwave.classList.add('active');
+    }
 
     const particles = [];
     const rockets = [];
@@ -49,24 +116,26 @@
         this.x = x;
         this.y = canvas.height;
         this.targetY = targetY;
-        this.vy = - (12 + Math.random() * 3);
+        this.vy = - (13 + Math.random() * 3.5);
         this.trail = [];
         this.dead = false;
       }
       update() {
         this.trail.push({x: this.x, y: this.y});
-        if (this.trail.length > 8) this.trail.shift();
+        if (this.trail.length > 10) this.trail.shift();
         this.y += this.vy;
         this.vy *= 0.985;
-        if (this.y <= this.targetY || Math.abs(this.vy) < 1.5) {
+        if (this.y <= this.targetY || Math.abs(this.vy) < 1.6) {
           this.dead = true;
+          triggerShockwave(this.x, this.y);
+          playBoomSound();
           explodeKamuro(this.x, this.y);
         }
       }
       draw() {
         ctx.beginPath();
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 3.5;
         for (let i = 0; i < this.trail.length; i++) {
           ctx.lineTo(this.trail[i].x, this.trail[i].y);
         }
@@ -85,16 +154,16 @@
         this.life = life;
         this.maxLife = life;
         this.trail = [];
-        this.maxTrail = isWillow ? 18 : 12;
+        this.maxTrail = isWillow ? 22 : 14;
       }
       update() {
         this.trail.push({x: this.x, y: this.y});
         if (this.trail.length > this.maxTrail) this.trail.shift();
         this.x += this.vx;
         this.y += this.vy;
-        this.vx *= 0.982; // Hambatan udara
-        this.vy *= 0.982;
-        this.vy += this.isWillow ? 0.055 : 0.04; // Gravitasi fisika
+        this.vx *= 0.981;
+        this.vy *= 0.981;
+        this.vy += this.isWillow ? 0.052 : 0.038;
         this.life--;
       }
       draw() {
@@ -107,7 +176,7 @@
         }
         ctx.strokeStyle = this.color;
         ctx.globalAlpha = alpha;
-        ctx.lineWidth = this.isWillow ? 1.6 : 2.4;
+        ctx.lineWidth = this.isWillow ? 1.8 : 2.8;
         ctx.lineCap = 'round';
         ctx.stroke();
         ctx.globalAlpha = 1.0;
@@ -115,38 +184,36 @@
     }
 
     function explodeKamuro(x, y) {
-      // 1. KANOPI EMAS KAMURO (280 partikel sulur weeping willow)
-      const goldCount = 280;
+      // 320 Sulur Weeping Willow Emas Padat
+      const goldCount = 320;
       for (let i = 0; i < goldCount; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = 2.5 + Math.random() * 5.8;
-        const vx = Math.cos(angle) * speed * 1.35; // Sebaran horizontal lebar
+        const speed = 2.8 + Math.random() * 6.4;
+        const vx = Math.cos(angle) * speed * 1.45;
         const vy = Math.sin(angle) * speed;
-        const colors = ['#ffffff', '#ffeaa7', '#fed330', '#f39c12', '#e67e22'];
+        const colors = ['#ffffff', '#fff2c2', '#fed330', '#f39c12', '#e17055'];
         const col = colors[Math.floor(Math.random() * colors.length)];
-        particles.push(new Particle(x, y, vx, vy, col, true, 110 + Math.random() * 40));
+        particles.push(new Particle(x, y, vx, vy, col, true, 115 + Math.random() * 45));
       }
 
-      // 2. SULUR NEON JEPANG (Hijau, Magenta, Cyan, Oranye)
-      const jewelColors = ['#00ff88', '#ff007f', '#00e5ff', '#ff8800'];
-      const jewelCount = 48;
+      // 52 Sulur Neon Zamrud, Magenta, Cyan Elektrik & Oranye Api
+      const jewelColors = ['#00ff88', '#ff007f', '#00e5ff', '#ff8800', '#a29bfe'];
+      const jewelCount = 52;
       for (let i = 0; i < jewelCount; i++) {
         const angle = (i / jewelCount) * Math.PI * 2;
-        const speed = 6.2 + Math.random() * 2.5;
-        const vx = Math.cos(angle) * speed * 1.3;
-        const vy = Math.sin(angle) * speed * 0.9;
+        const speed = 6.8 + Math.random() * 2.8;
+        const vx = Math.cos(angle) * speed * 1.35;
+        const vy = Math.sin(angle) * speed * 0.95;
         const col = jewelColors[i % jewelColors.length];
-        particles.push(new Particle(x, y, vx, vy, col, false, 85 + Math.random() * 25));
+        particles.push(new Particle(x, y, vx, vy, col, false, 90 + Math.random() * 30));
       }
     }
 
     function loop() {
-      // Efek Long-Exposure Persistence (Jejak Api Bertahan)
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.11)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Additive Blending (Cahaya Api Bertumpuk Menjadi Putih Terang)
       ctx.globalCompositeOperation = 'lighter';
 
       for (let i = rockets.length - 1; i >= 0; i--) {
@@ -164,7 +231,6 @@
       requestAnimationFrame(loop);
     }
 
-    // Peluncuran Otomatis Bergantian ala Hanabi Festival
     function launchShell() {
       const x = canvas.width * (0.35 + Math.random() * 0.3);
       const targetY = canvas.height * (0.2 + Math.random() * 0.18);
@@ -174,8 +240,21 @@
     launchShell();
     setInterval(launchShell, 3200);
 
-    // Klik layar untuk meledakkan kembang api seketika di posisi kursor!
+    // Audio Toggle Listener
+    const audioToggle = document.getElementById('audioToggle');
+    audioToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      initAudio();
+      soundEnabled = !soundEnabled;
+      document.getElementById('audioIcon').textContent = soundEnabled ? '🔊' : '🔇';
+      document.getElementById('audioText').textContent = soundEnabled ? 'Suara Dentuman Sub-Bass: AKTIF' : 'Suara: NONAKTIF';
+    });
+
+    // Klik Layar = Ledakan + Gelombang Kejut + Dentuman Bass Langsung!
     window.addEventListener('click', (e) => {
+      initAudio();
+      triggerShockwave(e.clientX, e.clientY);
+      playBoomSound();
       explodeKamuro(e.clientX, e.clientY);
     });
 

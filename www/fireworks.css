@@ -8,103 +8,171 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #020712;
+  background: #01040a;
   font-family: "Hiragino Sans", "Noto Sans JP", -apple-system, sans-serif;
+  perspective: 1200px;
 }
 
+.world-3d {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  transform-style: preserve-3d;
+  transition: transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+/* Langit Malam dengan Deep Cosmic Atmosphere */
+.sky-ambient {
+  position: absolute;
+  width: 110vw;
+  height: 110vh;
+  left: -5vw;
+  top: -5vh;
+  background: radial-gradient(ellipse at 50% 30%, #0d274c 0%, #051020 50%, #01040a 100%);
+  transform: translateZ(-200px);
+  z-index: 1;
+}
+
+/* Gelombang Kejut Supersonik (Taylor-Sedov Blast Wave Ring) */
+.shockwave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 40px 10px rgba(253, 203, 110, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 15;
+}
+
+.shockwave.active {
+  animation: sedovShock 0.85s cubic-bezier(0.08, 0.8, 0.15, 1) forwards;
+}
+
+@keyframes sedovShock {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 1;
+    border-width: 8px;
+  }
+  60% {
+    opacity: 0.8;
+    border-width: 3px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(45);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
 .hanabi-canvas {
   position: absolute;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
+  transform: translateZ(50px);
   z-index: 10;
 }
 
-/* Langit Malam dengan Pendar Kabut Asap Kembang Api */
-.sky-ambient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at 50% 35%, #0a1f38 0%, #040d1a 50%, #01040a 100%);
-  z-index: 1;
-}
-
+/* Overlay Estetik Ciamik Soro */
 .overlay {
   position: absolute;
-  top: 1.8rem;
-  left: 2rem;
-  z-index: 50;
-  pointer-events: none;
+  top: 2rem;
+  left: 2.5rem;
+  z-index: 60;
   color: #fff;
+  transform: translateZ(100px);
+  pointer-events: none;
 }
 
 h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: 3px;
-  background: linear-gradient(90deg, #ffeaa7, #fdcb6e, #fab1a0, #74b9ff);
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  background: linear-gradient(90deg, #ffeaa7, #fdcb6e, #fab1a0, #74b9ff, #a29bfe);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 30px rgba(253, 203, 110, 0.4);
+  filter: drop-shadow(0 0 35px rgba(253, 203, 110, 0.7));
 }
 
 .sub {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #dfe6e9;
-  letter-spacing: 1.5px;
-  margin-top: 4px;
+  letter-spacing: 2px;
+  margin-top: 6px;
 }
 
-.meta {
+.audio-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: 0.75rem;
-  color: #fdcb6e;
-  background: rgba(253, 203, 110, 0.12);
-  border: 1px solid rgba(253, 203, 110, 0.3);
-  padding: 3px 12px;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 6px 16px;
+  background: rgba(253, 203, 110, 0.15);
+  border: 1px solid rgba(253, 203, 110, 0.45);
+  backdrop-filter: blur(8px);
   border-radius: 999px;
+  font-size: 0.8rem;
+  color: #fdcb6e;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-/* Siluet Jembatan Busur & Kota Jepang ala Toyota Stadium */
-.city-silhouette {
+.audio-pill:hover {
+  background: rgba(253, 203, 110, 0.35);
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(253, 203, 110, 0.6);
+}
+
+/* Siluet Kota 3D Layer */
+.city-3d {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 22vh;
-  background: linear-gradient(180deg, transparent 0%, rgba(2, 6, 14, 0.85) 35%, #010408 100%);
-  z-index: 20;
+  height: 24vh;
+  transform: translateZ(80px);
   pointer-events: none;
+  z-index: 25;
 }
 
 .bridge-glow {
   position: absolute;
-  bottom: 8vh;
-  left: 20vw;
-  width: 32vw;
-  height: 8vh;
-  border: 3px solid rgba(255, 110, 90, 0.85);
+  bottom: 9vh;
+  left: 18vw;
+  width: 35vw;
+  height: 9vh;
+  border: 3px solid rgba(255, 100, 80, 0.85);
   border-bottom: none;
   border-radius: 999px 999px 0 0;
-  box-shadow: 0 0 25px rgba(255, 90, 70, 0.6), inset 0 0 15px rgba(255, 90, 70, 0.4);
+  box-shadow: 0 0 35px rgba(255, 90, 70, 0.7), inset 0 0 20px rgba(255, 90, 70, 0.5);
 }
 
 .bridge-glow-2 {
   position: absolute;
-  bottom: 8vh;
-  left: 54vw;
-  width: 26vw;
-  height: 6vh;
-  border: 3px solid rgba(255, 110, 90, 0.75);
+  bottom: 9vh;
+  left: 55vw;
+  width: 28vw;
+  height: 7vh;
+  border: 3px solid rgba(255, 100, 80, 0.8);
   border-bottom: none;
   border-radius: 999px 999px 0 0;
-  box-shadow: 0 0 20px rgba(255, 90, 70, 0.5);
+  box-shadow: 0 0 30px rgba(255, 90, 70, 0.6);
+}
+
+.city-lights {
+  position: absolute;
+  bottom: 3vh;
+  width: 100%;
+  height: 12vh;
+  box-shadow: 3vw -1vh 7px 1px #00d2ff, 9vw -3vh 9px 2px #ff4757, 15vw -1vh 6px 1px #ffa502, 23vw -2vh 7px 1px #2ed573, 31vw -4vh 12px 2px #fff, 45vw -2vh 7px 1px #1e90ff, 57vw -3vh 8px 2px #eccc68, 69vw -1vh 9px 2px #ff6b81, 81vw -4vh 14px 3px #00f59b, 89vw -2vh 7px 1px #ffa502, 37vw -1vh 6px 1px #70a1ff, 65vw -1vh 6px 1px #ff4757;
+  opacity: 0.95;
 }
 
 .river-reflection {
@@ -112,28 +180,19 @@ h1 {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 7vh;
-  background: linear-gradient(180deg, rgba(253, 203, 110, 0.15) 0%, transparent 100%);
-  filter: blur(8px);
-  opacity: 0.7;
+  height: 8vh;
+  background: linear-gradient(180deg, rgba(253, 203, 110, 0.22) 0%, transparent 100%);
+  filter: blur(10px);
   animation: riverWave 3s ease-in-out infinite alternate;
 }
 
 @keyframes riverWave {
   0% {
-    opacity: 0.5;
+    opacity: 0.6;
   }
   100% {
-    opacity: 0.85;
+    opacity: 0.95;
   }
-}
-.city-lights {
-  position: absolute;
-  bottom: 3vh;
-  width: 100%;
-  height: 10vh;
-  box-shadow: 4vw -1vh 6px 1px #00d2ff, 10vw -3vh 8px 2px #ff4757, 16vw -1vh 5px 1px #ffa502, 24vw -2vh 6px 1px #2ed573, 32vw -4vh 10px 2px #fff, 46vw -2vh 6px 1px #1e90ff, 58vw -3vh 7px 2px #eccc68, 70vw -1vh 8px 2px #ff6b81, 82vw -4vh 12px 3px #00f59b, 90vw -2vh 6px 1px #ffa502, 38vw -1vh 5px 1px #70a1ff, 66vw -1vh 5px 1px #ff4757;
-  opacity: 0.9;
 }
 
 /*# sourceMappingURL=fireworks.css.map */
