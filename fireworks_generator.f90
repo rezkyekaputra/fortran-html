@@ -1,272 +1,282 @@
 ! ============================================================
-! ULTIMATE MEGA FIREWORKS ENGINE — FORTRAN × DART SASS 💥🎆
-! Arsitektur: Multi-Particle DOM + Hardware GPU Transform3D
-! Menjamin 100% animasi berjalan mulus, super terang & meriah!
+! JAPANESE NISHIKI KAMURO HANABI (錦冠菊) ENGINE
+! FORTRAN 14 × DART SASS 1.107
+! Meniru visual persis foto kembangapijepang.jpg:
+! - Golden Weeping Willow (Hujan Emas Menjuntai)
+! - Jewel Neon Streamers (Hijau Zamrud, Magenta, Cyan, Oranye)
+! - Central White-Hot Rocket Beam (Pilar Cahaya Putih Naik)
+! - Japanese City & Bridge Silhouette dengan Lampu Berkelip
 ! ============================================================
-program ultimate_fireworks
+program japanese_hanabi_engine
   implicit none
 
   integer :: unit_scss, unit_html
-  integer :: s, p, num_shells, num_particles
-  real :: angle, speed, tx, ty, drop_val
+  integer :: i, k
+  real :: angle, speed, r, tx, ty, drop_val
   real, parameter :: PI = 3.141592653589793
 
-  character(len=20) :: shell_name(6)
-  character(len=15) :: col_main(6), col_glow(6)
-  real :: shell_x(6), shell_y(6), shell_delay(6)
-
-  num_shells = 6
-  num_particles = 24  ! 24 partikel per letupan × 6 letupan = 144 partikel simultan
-
-  shell_name = [character(len=20) :: &
-    "phoenix", "supernova", "sakura", "emerald", "amethyst", "starlight"]
-
-  col_main = [character(len=15) :: &
-    "#fe8019", "#8ec07c", "#d3869b", "#b8bb26", "#b16286", "#ffffff"]
-
-  col_glow = [character(len=15) :: &
-    "#fabd2f", "#83a598", "#fb4934", "#fabd2f", "#d3869b", "#fabd2f"]
-
-  ! Posisi letupan di langit (vw horizontal, vh vertikal) & delay waktu
-  shell_x     = [22.0, 78.0, 50.0, 32.0, 68.0, 50.0]
-  shell_y     = [28.0, 24.0, 20.0, 36.0, 32.0, 42.0]
-  shell_delay = [0.0,  0.8,  1.6,  2.4,  3.2,  4.0]
+  character(len=15) :: jewel_cols(4)
+  jewel_cols = [character(len=15) :: "#00ff88", "#ff007f", "#00d4ff", "#ff8800"]
 
   ! ------------------------------------------------------------
-  ! 1. GENERATE SCSS DENGAN DART SASS
+  ! 1. GENERATE SCSS
   ! ------------------------------------------------------------
   open(newunit=unit_scss, file="/home/dongkrak/fortran-web/fireworks.scss", status="replace")
 
   write(unit_scss,'(A)') "/// ====================================================="
-  write(unit_scss,'(A)') "/// ULTIMATE FIREWORKS ENGINE (FORTRAN × DART SASS) 💥🎆"
-  write(unit_scss,'(A)') "/// Hardware-Accelerated CSS · Instant Launch · No Lag"
+  write(unit_scss,'(A)') "/// NISHIKI KAMURO HANABI (錦冠菊) · FORTRAN × DART SASS"
+  write(unit_scss,'(A)') "/// Japanese Golden Willow & Jewel Streamers"
   write(unit_scss,'(A)') "/// ====================================================="
   write(unit_scss,'(A)') "@use 'sass:math';"
   write(unit_scss,'(A)') "@use 'sass:color';"
   write(unit_scss,'(A)') ""
   write(unit_scss,'(A)') "* { margin: 0; padding: 0; box-sizing: border-box; }"
   write(unit_scss,'(A)') "body {"
-  write(unit_scss,'(A)') "  background: #020305;"
+  write(unit_scss,'(A)') "  background: radial-gradient(ellipse at 50% 60%, #06111f 0%, #02070f 60%, #010307 100%);"
   write(unit_scss,'(A)') "  min-height: 100vh;"
   write(unit_scss,'(A)') "  overflow: hidden;"
-  write(unit_scss,'(A)') "  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;"
+  write(unit_scss,'(A)') "  font-family: 'Hiragino Sans', 'Noto Sans JP', -apple-system, sans-serif;"
   write(unit_scss,'(A)') "}"
   write(unit_scss,'(A)') ""
-  write(unit_scss,'(A)') ".sky {"
+  write(unit_scss,'(A)') ".stage {"
   write(unit_scss,'(A)') "  position: relative;"
   write(unit_scss,'(A)') "  width: 100vw;"
   write(unit_scss,'(A)') "  height: 100vh;"
-  write(unit_scss,'(A)') "  background: radial-gradient(ellipse at 50% 100%, #171b24 0%, #06080c 60%, #020305 100%);"
+  write(unit_scss,'(A)') "  overflow: hidden;"
   write(unit_scss,'(A)') "}"
   write(unit_scss,'(A)') ""
-  write(unit_scss,'(A)') ".stars {"
+  write(unit_scss,'(A)') "/* Asap Langit & Cahaya Pendar Malam */"
+  write(unit_scss,'(A)') ".ambient-glow {"
   write(unit_scss,'(A)') "  position: absolute;"
-  write(unit_scss,'(A)') "  width: 2px; height: 2px;"
-  write(unit_scss,'(A)') "  border-radius: 50%;"
-  write(unit_scss,'(A)') "  background: transparent;"
-  write(unit_scss,'(A)') "  box-shadow:"
-  write(unit_scss,'(A)') "    12vw 14vh #fff, 28vw 20vh rgba(255,255,255,0.7), 42vw 8vh #fff, 60vw 16vh rgba(255,255,255,0.8),"
-  write(unit_scss,'(A)') "    75vw 12vh #fff, 88vw 22vh rgba(255,255,255,0.6), 15vw 42vh rgba(255,255,255,0.5), 94vw 35vh #fff,"
-  write(unit_scss,'(A)') "    35vw 30vh rgba(255,255,255,0.7), 65vw 38vh #fff, 82vw 6vh rgba(255,255,255,0.9), 8vw 28vh #fff;"
-  write(unit_scss,'(A)') "  animation: twinkle 2.5s ease-in-out infinite alternate;"
+  write(unit_scss,'(A)') "  top: 15vh;"
+  write(unit_scss,'(A)') "  left: 50%;"
+  write(unit_scss,'(A)') "  transform: translateX(-50%);"
+  write(unit_scss,'(A)') "  width: 90vw;"
+  write(unit_scss,'(A)') "  height: 70vh;"
+  write(unit_scss,'(A)') "  background: radial-gradient(circle, rgba(255, 200, 100, 0.12) 0%, rgba(0, 180, 216, 0.06) 45%, transparent 75%);"
+  write(unit_scss,'(A)') "  filter: blur(40px);"
+  write(unit_scss,'(A)') "  animation: ambientPulse 4s ease-in-out infinite alternate;"
   write(unit_scss,'(A)') "}"
-  write(unit_scss,'(A)') "@keyframes twinkle { 0% { opacity: 0.3; } 100% { opacity: 0.95; } }"
+  write(unit_scss,'(A)') "@keyframes ambientPulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }"
   write(unit_scss,'(A)') ""
-  write(unit_scss,'(A)') ".skyline {"
+  write(unit_scss,'(A)') "/* Title Overlay Estetik ala Matsuri Jepang */"
+  write(unit_scss,'(A)') ".overlay {"
+  write(unit_scss,'(A)') "  position: absolute;"
+  write(unit_scss,'(A)') "  top: 1.5rem;"
+  write(unit_scss,'(A)') "  left: 2rem;"
+  write(unit_scss,'(A)') "  z-index: 100;"
+  write(unit_scss,'(A)') "  color: #fff;"
+  write(unit_scss,'(A)') "  text-shadow: 0 0 20px rgba(0,0,0,0.8);"
+  write(unit_scss,'(A)') "  pointer-events: none;"
+  write(unit_scss,'(A)') "}"
+  write(unit_scss,'(A)') "h1 {"
+  write(unit_scss,'(A)') "  font-size: 2.2rem;"
+  write(unit_scss,'(A)') "  font-weight: 800;"
+  write(unit_scss,'(A)') "  letter-spacing: 2px;"
+  write(unit_scss,'(A)') "  background: linear-gradient(90deg, #ffeaa7, #fdcb6e, #fab1a0, #74b9ff);"
+  write(unit_scss,'(A)') "  -webkit-background-clip: text;"
+  write(unit_scss,'(A)') "  -webkit-text-fill-color: transparent;"
+  write(unit_scss,'(A)') "}"
+  write(unit_scss,'(A)') ".sub {"
+  write(unit_scss,'(A)') "  font-size: 0.88rem;"
+  write(unit_scss,'(A)') "  color: #dfe6e9;"
+  write(unit_scss,'(A)') "  letter-spacing: 1px;"
+  write(unit_scss,'(A)') "  margin-top: 4px;"
+  write(unit_scss,'(A)') "}"
+  write(unit_scss,'(A)') ""
+  write(unit_scss,'(A)') "/* Pilar Cahaya Vertikal Putih Panas di Tengah */"
+  write(unit_scss,'(A)') ".central-pillar {"
+  write(unit_scss,'(A)') "  position: absolute;"
+  write(unit_scss,'(A)') "  bottom: 0;"
+  write(unit_scss,'(A)') "  left: 50%;"
+  write(unit_scss,'(A)') "  width: 4px;"
+  write(unit_scss,'(A)') "  height: 85vh;"
+  write(unit_scss,'(A)') "  transform: translateX(-50%);"
+  write(unit_scss,'(A)') "  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 235, 180, 0.9) 50%, transparent 100%);"
+  write(unit_scss,'(A)') "  box-shadow: 0 0 20px 4px #ffffff, 0 0 45px 12px rgba(254, 202, 87, 0.7);"
+  write(unit_scss,'(A)') "  animation: pillarBeam 3.8s ease-in-out infinite;"
+  write(unit_scss,'(A)') "  z-index: 15;"
+  write(unit_scss,'(A)') "}"
+  write(unit_scss,'(A)') "@keyframes pillarBeam {"
+  write(unit_scss,'(A)') "  0%, 15% { opacity: 0; transform: translateX(-50%) scaleY(0); transform-origin: bottom; }"
+  write(unit_scss,'(A)') "  25% { opacity: 1; transform: translateX(-50%) scaleY(1); transform-origin: bottom; }"
+  write(unit_scss,'(A)') "  65% { opacity: 0.95; transform: translateX(-50%) scaleY(1); }"
+  write(unit_scss,'(A)') "  90%, 100% { opacity: 0; transform: translateX(-50%) scaleY(1); }"
+  write(unit_scss,'(A)') "}"
+  write(unit_scss,'(A)') ""
+  write(unit_scss,'(A)') "/* Pusat Ledakan Nishiki Kamuro */"
+  write(unit_scss,'(A)') ".kamuro-center {"
+  write(unit_scss,'(A)') "  position: absolute;"
+  write(unit_scss,'(A)') "  top: 25vh;"
+  write(unit_scss,'(A)') "  left: 50%;"
+  write(unit_scss,'(A)') "  transform: translate(-50%, -50%);"
+  write(unit_scss,'(A)') "  z-index: 20;"
+  write(unit_scss,'(A)') "}"
+  write(unit_scss,'(A)') ""
+  write(unit_scss,'(A)') "/* Partikel Golden Willow (Hujan Emas Melengkung Turun) */"
+  write(unit_scss,'(A)') ".willow-spark {"
+  write(unit_scss,'(A)') "  position: absolute;"
+  write(unit_scss,'(A)') "  width: 4px;"
+  write(unit_scss,'(A)') "  height: 12px;"
+  write(unit_scss,'(A)') "  border-radius: 999px;"
+  write(unit_scss,'(A)') "  background: linear-gradient(180deg, #fff 0%, #fed330 60%, #fa8231 100%);"
+  write(unit_scss,'(A)') "  box-shadow: 0 0 10px 2px rgba(254, 211, 48, 0.8), 0 0 20px 4px rgba(250, 130, 49, 0.5);"
+  write(unit_scss,'(A)') "  transform-origin: center top;"
+  write(unit_scss,'(A)') "}"
+  write(unit_scss,'(A)') ""
+  write(unit_scss,'(A)') "/* Streamer Garis Lengkung Neon Khas Jepang */"
+  write(unit_scss,'(A)') ".streamer {"
+  write(unit_scss,'(A)') "  position: absolute;"
+  write(unit_scss,'(A)') "  width: 5px;"
+  write(unit_scss,'(A)') "  height: 20px;"
+  write(unit_scss,'(A)') "  border-radius: 999px;"
+  write(unit_scss,'(A)') "  transform-origin: center top;"
+  write(unit_scss,'(A)') "}"
+
+  ! ------------------------------------------------------------
+  ! LOOP GENERATE 72 PARTIKEL WILLOW EMAS (KAMURO) DENGAN FORTRAN
+  ! ------------------------------------------------------------
+  do i = 1, 72
+    angle = (real(i) / 72.0) * 2.0 * PI
+    speed = 140.0 + mod(real(i) * 37.0, 120.0) ! Kecepatan ledakan
+    drop_val = 180.0 + mod(real(i) * 29.0, 100.0) ! Lengkungan gravitasi turun panjang khas willow Jepang
+
+    tx = speed * cos(angle) * 1.6  ! Sebaran oval horizontal lebar
+    ty = speed * sin(angle)
+
+    write(unit_scss,'(A,I2.2,A)') ".w-", i, " {"
+    write(unit_scss,'(A,I2.2,A)') "  animation: willow-anim-", i, " 3.8s cubic-bezier(0.12, 0.7, 0.2, 1) infinite;"
+    write(unit_scss,'(A)') "}"
+    write(unit_scss,'(A,I2.2,A)') "@keyframes willow-anim-", i, " {"
+    write(unit_scss,'(A)') "  0%, 22% { transform: translate3d(0, 0, 0) scale(0); opacity: 0; }"
+    write(unit_scss,'(A)') "  26% { transform: translate3d(0, 0, 0) scale(1.5); opacity: 1; }"
+    write(unit_scss,'(A,F7.2,A,F7.2,A)') "  52% { transform: translate3d(", tx, "px, ", ty, "px, 0) scale(1.2); opacity: 1; }"
+    write(unit_scss,'(A,F7.2,A,F7.2,A)') "  100% { transform: translate3d(", (tx * 1.15), "px, ", (ty + drop_val), "px, 0) scale(0.3) scaleY(2.2); opacity: 0; }"
+    write(unit_scss,'(A)') "}"
+    write(unit_scss,'(A)') ""
+  end do
+
+  ! ------------------------------------------------------------
+  ! LOOP GENERATE 24 STREAMERS NEON WARNA-WARNI (JEWEL STREAKS)
+  ! ------------------------------------------------------------
+  do i = 1, 24
+    angle = (real(i) / 24.0) * 2.0 * PI
+    speed = 220.0 + mod(real(i) * 41.0, 110.0) ! Lebih cepat & jauh
+    drop_val = 140.0
+
+    tx = speed * cos(angle) * 1.5
+    ty = speed * sin(angle) * 0.9
+
+    k = mod(i, 4) + 1  ! Pilih 1 dari 4 warna neon (Hijau, Magenta, Cyan, Oranye)
+
+    write(unit_scss,'(A,I2.2,A)') ".st-", i, " {"
+    write(unit_scss,'(A,A,A)') "  background: ", trim(jewel_cols(k)), ";"
+    write(unit_scss,'(A,A,A,A,A)') "  box-shadow: 0 0 16px 4px ", trim(jewel_cols(k)), ", 0 0 35px ", trim(jewel_cols(k)), ";"
+    write(unit_scss,'(A,I2.2,A)') "  animation: streamer-anim-", i, " 3.8s cubic-bezier(0.15, 0.85, 0.35, 1) infinite;"
+    write(unit_scss,'(A)') "}"
+    write(unit_scss,'(A,I2.2,A)') "@keyframes streamer-anim-", i, " {"
+    write(unit_scss,'(A)') "  0%, 20% { transform: translate3d(0, 0, 0) scale(0); opacity: 0; }"
+    write(unit_scss,'(A)') "  24% { transform: translate3d(0, 0, 0) scale(2); opacity: 1; }"
+    write(unit_scss,'(A,F7.2,A,F7.2,A)') "  58% { transform: translate3d(", tx, "px, ", ty, "px, 0) scale(1) scaleY(2.5); opacity: 1; }"
+    write(unit_scss,'(A,F7.2,A,F7.2,A)') "  95%, 100% { transform: translate3d(", (tx * 1.1), "px, ", (ty + drop_val), "px, 0) scale(0.1) scaleY(3); opacity: 0; }"
+    write(unit_scss,'(A)') "}"
+    write(unit_scss,'(A)') ""
+  end do
+
+  ! ------------------------------------------------------------
+  ! SILUET KOTA & JEMBATAN BUSUR JEPANG (TOYOTA STADIUM STYLE)
+  ! ------------------------------------------------------------
+  write(unit_scss,'(A)') "/* Lanskap Bawah: Jembatan Busur & Kota Jepang */"
+  write(unit_scss,'(A)') ".japan-landscape {"
   write(unit_scss,'(A)') "  position: absolute;"
   write(unit_scss,'(A)') "  bottom: 0;"
   write(unit_scss,'(A)') "  left: 0;"
   write(unit_scss,'(A)') "  width: 100%;"
-  write(unit_scss,'(A)') "  height: 60px;"
-  write(unit_scss,'(A)') "  background: linear-gradient(180deg, transparent 0%, rgba(5,6,8,0.95) 100%);"
-  write(unit_scss,'(A)') "  border-top: 1px solid rgba(255,255,255,0.06);"
-  write(unit_scss,'(A)') "  z-index: 10;"
-  write(unit_scss,'(A)') "}"
-  write(unit_scss,'(A)') ""
-  write(unit_scss,'(A)') ".overlay {"
-  write(unit_scss,'(A)') "  position: absolute;"
-  write(unit_scss,'(A)') "  top: 1.8rem;"
-  write(unit_scss,'(A)') "  left: 50%;"
-  write(unit_scss,'(A)') "  transform: translateX(-50%);"
-  write(unit_scss,'(A)') "  text-align: center;"
-  write(unit_scss,'(A)') "  z-index: 100;"
+  write(unit_scss,'(A)') "  height: 28vh;"
+  write(unit_scss,'(A)') "  background: linear-gradient(180deg, transparent 0%, rgba(3, 8, 16, 0.95) 45%, #010408 100%);"
+  write(unit_scss,'(A)') "  z-index: 30;"
   write(unit_scss,'(A)') "  pointer-events: none;"
-  write(unit_scss,'(A)') "  color: #ebdbb2;"
-  write(unit_scss,'(A)') "}"
-  write(unit_scss,'(A)') "h1 {"
-  write(unit_scss,'(A)') "  font-size: 2.5rem;"
-  write(unit_scss,'(A)') "  font-weight: 900;"
-  write(unit_scss,'(A)') "  background: linear-gradient(90deg, #fabd2f, #fe8019, #fb4934, #d3869b, #8ec07c);"
-  write(unit_scss,'(A)') "  -webkit-background-clip: text;"
-  write(unit_scss,'(A)') "  -webkit-text-fill-color: transparent;"
-  write(unit_scss,'(A)') "  filter: drop-shadow(0 0 35px rgba(254, 128, 25, 0.7));"
-  write(unit_scss,'(A)') "}"
-  write(unit_scss,'(A)') ".sub {"
-  write(unit_scss,'(A)') "  font-size: 0.95rem;"
-  write(unit_scss,'(A)') "  color: #d5c4a1;"
-  write(unit_scss,'(A)') "  margin-top: 6px;"
-  write(unit_scss,'(A)') "}"
-  write(unit_scss,'(A)') ".tag {"
-  write(unit_scss,'(A)') "  display: inline-block;"
-  write(unit_scss,'(A)') "  background: rgba(254, 128, 25, 0.18);"
-  write(unit_scss,'(A)') "  border: 1px solid rgba(254, 128, 25, 0.45);"
-  write(unit_scss,'(A)') "  color: #fabd2f;"
-  write(unit_scss,'(A)') "  font-size: 0.8rem;"
-  write(unit_scss,'(A)') "  padding: 4px 14px;"
-  write(unit_scss,'(A)') "  border-radius: 999px;"
-  write(unit_scss,'(A)') "  margin-top: 8px;"
   write(unit_scss,'(A)') "}"
   write(unit_scss,'(A)') ""
-  write(unit_scss,'(A)') "/* Shell Container */"
-  write(unit_scss,'(A)') ".shell {"
+  write(unit_scss,'(A)') ".bridge-arch {"
   write(unit_scss,'(A)') "  position: absolute;"
-  write(unit_scss,'(A)') "  width: 0;"
-  write(unit_scss,'(A)') "  height: 0;"
+  write(unit_scss,'(A)') "  bottom: 8vh;"
+  write(unit_scss,'(A)') "  left: 28vw;"
+  write(unit_scss,'(A)') "  width: 44vw;"
+  write(unit_scss,'(A)') "  height: 9vh;"
+  write(unit_scss,'(A)') "  border: 3px solid rgba(255, 120, 100, 0.7);"
+  write(unit_scss,'(A)') "  border-bottom: none;"
+  write(unit_scss,'(A)') "  border-radius: 999px 999px 0 0;"
+  write(unit_scss,'(A)') "  box-shadow: 0 0 25px rgba(255, 100, 80, 0.5), inset 0 0 15px rgba(255, 100, 80, 0.3);"
   write(unit_scss,'(A)') "}"
   write(unit_scss,'(A)') ""
-  write(unit_scss,'(A)') "/* Kepala Roket Meluncur */"
-  write(unit_scss,'(A)') ".rocket {"
+  write(unit_scss,'(A)') ".city-bokeh {"
   write(unit_scss,'(A)') "  position: absolute;"
-  write(unit_scss,'(A)') "  width: 6px;"
-  write(unit_scss,'(A)') "  height: 6px;"
-  write(unit_scss,'(A)') "  border-radius: 50%;"
-  write(unit_scss,'(A)') "  transform: translate(-50%, -50%);"
+  write(unit_scss,'(A)') "  bottom: 2vh;"
+  write(unit_scss,'(A)') "  width: 100%;"
+  write(unit_scss,'(A)') "  height: 12vh;"
+  write(unit_scss,'(A)') "  box-shadow:"
+  write(unit_scss,'(A)') "    5vw -2vh 6px 1px #00d2ff, 12vw -4vh 8px 2px #ff4757, 18vw -1vh 5px 1px #ffa502,"
+  write(unit_scss,'(A)') "    26vw -3vh 6px 1px #2ed573, 34vw -5vh 10px 2px #fff, 48vw -2vh 6px 1px #1e90ff,"
+  write(unit_scss,'(A)') "    60vw -4vh 7px 2px #eccc68, 72vw -2vh 8px 2px #ff6b81, 84vw -5vh 12px 3px #00f59b,"
+  write(unit_scss,'(A)') "    92vw -3vh 6px 1px #ffa502, 40vw -1vh 5px 1px #70a1ff, 68vw -1vh 5px 1px #ff4757;"
+  write(unit_scss,'(A)') "  opacity: 0.85;"
   write(unit_scss,'(A)') "}"
-  write(unit_scss,'(A)') ""
-  write(unit_scss,'(A)') "/* Kilatan Ledakan Utama (Flash) */"
-  write(unit_scss,'(A)') ".flash {"
-  write(unit_scss,'(A)') "  position: absolute;"
-  write(unit_scss,'(A)') "  width: 16px;"
-  write(unit_scss,'(A)') "  height: 16px;"
-  write(unit_scss,'(A)') "  border-radius: 50%;"
-  write(unit_scss,'(A)') "  transform: translate(-50%, -50%);"
-  write(unit_scss,'(A)') "}"
-  write(unit_scss,'(A)') ""
-  write(unit_scss,'(A)') "/* Partikel Kembang Api */"
-  write(unit_scss,'(A)') ".particle {"
-  write(unit_scss,'(A)') "  position: absolute;"
-  write(unit_scss,'(A)') "  width: 6px;"
-  write(unit_scss,'(A)') "  height: 6px;"
-  write(unit_scss,'(A)') "  border-radius: 50%;"
-  write(unit_scss,'(A)') "  transform: translate(-50%, -50%);"
-  write(unit_scss,'(A)') "}"
-
-  ! Loop untuk tiap Shell Kembang Api
-  do s = 1, num_shells
-    write(unit_scss,'(A,A,A)') ".shell-", trim(shell_name(s)), " {"
-    write(unit_scss,'(A,F5.1,A)') "  left: ", shell_x(s), "vw;"
-    write(unit_scss,'(A,F5.1,A)') "  top: ", shell_y(s), "vh;"
-    write(unit_scss,'(A)') "}"
-    write(unit_scss,'(A)') ""
-
-    ! Animasi Roket Meluncur Naik
-    write(unit_scss,'(A,A,A)') ".shell-", trim(shell_name(s)), " .rocket {"
-    write(unit_scss,'(A,A,A)') "  background: ", trim(col_main(s)), ";"
-    write(unit_scss,'(A,A,A)') "  box-shadow: 0 0 16px 4px ", trim(col_glow(s)), ";"
-    write(unit_scss,'(A,A,A,F4.1,A)') "  animation: rocket-", trim(shell_name(s)), " 3.2s ease-out infinite ", shell_delay(s), "s;"
-    write(unit_scss,'(A)') "}"
-    write(unit_scss,'(A)') ""
-    write(unit_scss,'(A,A,A)') "@keyframes rocket-", trim(shell_name(s)), " {"
-    write(unit_scss,'(A)') "  0% { transform: translateY(75vh) scale(1); opacity: 1; }"
-    write(unit_scss,'(A)') "  38% { transform: translateY(0) scale(1.8); opacity: 1; }"
-    write(unit_scss,'(A)') "  40% { opacity: 0; }"
-    write(unit_scss,'(A)') "  100% { opacity: 0; }"
-    write(unit_scss,'(A)') "}"
-    write(unit_scss,'(A)') ""
-
-    ! Animasi Kilatan Ledakan (Flash)
-    write(unit_scss,'(A,A,A)') ".shell-", trim(shell_name(s)), " .flash {"
-    write(unit_scss,'(A)') "  background: #ffffff;"
-    write(unit_scss,'(A,A,A,A,A)') "  box-shadow: 0 0 45px 15px #ffffff, 0 0 90px 30px ", trim(col_main(s)), ";"
-    write(unit_scss,'(A,A,A,F4.1,A)') "  animation: flash-", trim(shell_name(s)), " 3.2s ease-out infinite ", shell_delay(s), "s;"
-    write(unit_scss,'(A)') "}"
-    write(unit_scss,'(A)') ""
-    write(unit_scss,'(A,A,A)') "@keyframes flash-", trim(shell_name(s)), " {"
-    write(unit_scss,'(A)') "  0%, 37% { transform: scale(0); opacity: 0; }"
-    write(unit_scss,'(A)') "  39% { transform: scale(3.5); opacity: 1; }"
-    write(unit_scss,'(A)') "  48% { transform: scale(6); opacity: 0; }"
-    write(unit_scss,'(A)') "  100% { opacity: 0; }"
-    write(unit_scss,'(A)') "}"
-    write(unit_scss,'(A)') ""
-
-    ! Loop 24 Partikel per Shell (Fisika Trigonometri Fortran!)
-    do p = 1, num_particles
-      angle = (real(p) / real(num_particles)) * 2.0 * PI
-      speed = 110.0 + mod(real(p) * 27.0, 95.0)  ! Variasi kecepatan partikel acak
-      drop_val = 70.0 + mod(real(p) * 19.0, 45.0) ! Lengkungan gravitasi bumi
-
-      tx = speed * cos(angle)
-      ty = speed * sin(angle)
-
-      write(unit_scss,'(A,A,A,I2.2,A)') ".shell-", trim(shell_name(s)), " .p-", p, " {"
-      if (mod(p, 2) == 0) then
-        write(unit_scss,'(A,A,A)') "  background: ", trim(col_main(s)), ";"
-        write(unit_scss,'(A,A,A)') "  box-shadow: 0 0 14px 2px ", trim(col_glow(s)), ";"
-      else
-        write(unit_scss,'(A,A,A)') "  background: ", trim(col_glow(s)), ";"
-        write(unit_scss,'(A,A,A)') "  box-shadow: 0 0 14px 2px ", trim(col_main(s)), ";"
-      end if
-      write(unit_scss,'(A,A,A,I2.2,A,F4.1,A)') "  animation: anim-", trim(shell_name(s)), "-p", p, &
-        " 3.2s cubic-bezier(0.12, 0.8, 0.25, 1) infinite ", shell_delay(s), "s;"
-      write(unit_scss,'(A)') "}"
-      write(unit_scss,'(A)') ""
-
-      write(unit_scss,'(A,A,A,I2.2,A)') "@keyframes anim-", trim(shell_name(s)), "-p", p, " {"
-      write(unit_scss,'(A)') "  0%, 38% { transform: translate3d(0, 0, 0) scale(0); opacity: 0; }"
-      write(unit_scss,'(A)') "  40% { transform: translate3d(0, 0, 0) scale(1.8); opacity: 1; }"
-      write(unit_scss,'(A,F7.2,A,F7.2,A)') "  72% { transform: translate3d(", tx, "px, ", ty, "px, 0) scale(1.1); opacity: 1; }"
-      write(unit_scss,'(A,F7.2,A,F7.2,A)') "  100% { transform: translate3d(", tx, "px, ", (ty + drop_val), "px, 0) scale(0.2); opacity: 0; }"
-      write(unit_scss,'(A)') "}"
-      write(unit_scss,'(A)') ""
-    end do
-
-  end do
 
   close(unit_scss)
-  print *, "SCSS Ultimate Fireworks sukses di-generate oleh Fortran!"
+  print *, "SCSS Hanabi Jepang berhasil dibuat oleh Fortran!"
 
   ! ------------------------------------------------------------
-  ! 2. GENERATE INDEX.HTML DENGAN 144 PARTIKEL DOM
+  ! 2. GENERATE INDEX.HTML
   ! ------------------------------------------------------------
   open(newunit=unit_html, file="/home/dongkrak/fortran-web/index.html", status="replace")
   write(unit_html,'(A)') "<!DOCTYPE html>"
-  write(unit_html,'(A)') "<html lang='id'>"
+  write(unit_html,'(A)') "<html lang='ja'>"
   write(unit_html,'(A)') "<head>"
   write(unit_html,'(A)') "  <meta charset='UTF-8'>"
   write(unit_html,'(A)') "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-  write(unit_html,'(A)') "  <title>DUAAARRR! Festival Kembang Api Akbar 💥🎆</title>"
-  write(unit_html,'(A)') "  <link rel='stylesheet' href='fireworks.css?v=3'>"
+  write(unit_html,'(A)') "  <title>錦冠菊 · 日本の花火 (Nishiki Kamuro Hanabi) 🎆</title>"
+  write(unit_html,'(A)') "  <link rel='stylesheet' href='fireworks.css?v=hanabi_v1'>"
   write(unit_html,'(A)') "</head>"
   write(unit_html,'(A)') "<body>"
-  write(unit_html,'(A)') "  <div class='overlay'>"
-  write(unit_html,'(A)') "    <h1>💥 DUAR! FESTIVAL KEMBANG API 🎆</h1>"
-  write(unit_html,'(A)') "    <p class='sub'>"
-  write(unit_html,'(A)') "      144 Partikel Fisika Nyata · Hardware GPU Composited · 100% Pure CSS"
-  write(unit_html,'(A)') "    </p>"
-  write(unit_html,'(A)') "    <div class='tag'>"
-  write(unit_html,'(A)') "      <span>⚡ GNU Fortran 14.3.1</span> · <span>🎨 Dart Sass 1.107.1</span>"
-  write(unit_html,'(A)') "    </div>"
-  write(unit_html,'(A)') "  </div>"
+  write(unit_html,'(A)') "  <div class='stage'>"
+  write(unit_html,'(A)') "    <div class='ambient-glow'></div>"
   write(unit_html,'(A)') ""
-  write(unit_html,'(A)') "  <div class='sky'>"
-  write(unit_html,'(A)') "    <div class='stars'></div>"
-
-  ! Loop mencetak 6 Shell & masing-masing 24 partikel
-  do s = 1, num_shells
-    write(unit_html,'(A,A,A)') "    <div class='shell shell-", trim(shell_name(s)), "'>"
-    write(unit_html,'(A)') "      <div class='rocket'></div>"
-    write(unit_html,'(A)') "      <div class='flash'></div>"
-    do p = 1, num_particles
-      write(unit_html,'(A,I2.2,A)') "      <div class='particle p-", p, "'></div>"
-    end do
-    write(unit_html,'(A)') "    </div>"
+  write(unit_html,'(A)') "    <div class='overlay'>"
+  write(unit_html,'(A)') "      <h1>錦冠菊 · 日本の花火</h1>"
+  write(unit_html,'(A)') "      <p class='sub'>JAPANESE NISHIKI KAMURO HANABI · GOLDEN WILLOW & NEON STREAMERS</p>"
+  write(unit_html,'(A)') "      <p style='color: #fdcb6e; font-size: 0.75rem; margin-top: 4px;'>"
+  write(unit_html,'(A)') "        Calculated by GNU Fortran 14.3.1 · Compiled by Dart Sass 1.107.1"
+  write(unit_html,'(A)') "      </p>"
+  write(unit_html,'(A)') "    </div>"
+  write(unit_html,'(A)') ""
+  write(unit_html,'(A)') "    <!-- Pilar Putih Menembus Langit -->"
+  write(unit_html,'(A)') "    <div class='central-pillar'></div>"
+  write(unit_html,'(A)') ""
+  write(unit_html,'(A)') "    <!-- Inti Kembang Api Kamuro -->"
+  write(unit_html,'(A)') "    <div class='kamuro-center'>"
+  
+  ! 72 Partikel Weeping Willow Emas
+  do i = 1, 72
+    write(unit_html,'(A,I2.2,A)') "      <div class='willow-spark w-", i, "'></div>"
   end do
 
-  write(unit_html,'(A)') "    <div class='skyline'></div>"
+  ! 24 Streamers Neon Mewah
+  do i = 1, 24
+    write(unit_html,'(A,I2.2,A)') "      <div class='streamer st-", i, "'></div>"
+  end do
+
+  write(unit_html,'(A)') "    </div>"
+  write(unit_html,'(A)') ""
+  write(unit_html,'(A)') "    <!-- Lanskap Kota Jepang & Jembatan Busur -->"
+  write(unit_html,'(A)') "    <div class='japan-landscape'>"
+  write(unit_html,'(A)') "      <div class='bridge-arch'></div>"
+  write(unit_html,'(A)') "      <div class='city-bokeh'></div>"
+  write(unit_html,'(A)') "    </div>"
   write(unit_html,'(A)') "  </div>"
   write(unit_html,'(A)') "</body>"
   write(unit_html,'(A)') "</html>"
   close(unit_html)
-  print *, "index.html Ultimate Fireworks sukses di-generate!"
+  print *, "index.html Hanabi Jepang berhasil dibuat!"
 
-end program ultimate_fireworks
+end program japanese_hanabi_engine
