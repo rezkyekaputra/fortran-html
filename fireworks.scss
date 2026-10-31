@@ -1,6 +1,6 @@
 /// =====================================================
-/// ULTRA EXTREME HANABI (錦冠菊・神威) · DART SASS 1.107
-/// Sedov Shockwave Physics & 3D Spatial Depth
+/// NAGAOKA HANABI (長岡花火・正三尺玉) · DART SASS 1.107
+/// Colossal Golden Kamuro Dome & Rainbow Core
 /// =====================================================
 @use 'sass:math';
 @use 'sass:color';
@@ -10,53 +10,29 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #01040a;
+  background: #040810;
   font-family: 'Hiragino Sans', 'Noto Sans JP', -apple-system, sans-serif;
-  perspective: 1200px;
 }
 
-.world-3d {
+.stage {
   position: relative;
   width: 100vw;
   height: 100vh;
-  transform-style: preserve-3d;
-  transition: transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1);
+  background: radial-gradient(ellipse at 40% 45%, #0b1c30 0%, #06101e 50%, #02050b 100%);
+  overflow: hidden;
 }
 
-/* Langit Malam dengan Deep Cosmic Atmosphere */
-.sky-ambient {
+/* Awan Malam Bercahaya Lembut (Illuminated Night Clouds) */
+.clouds {
   position: absolute;
-  width: 110vw;
-  height: 110vh;
-  left: -5vw;
-  top: -5vh;
-  background: radial-gradient(ellipse at 50% 30%, #0d274c 0%, #051020 50%, #01040a 100%);
-  transform: translateZ(-200px);
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse at 75% 45%, rgba(20, 45, 75, 0.45) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 55%, rgba(15, 35, 60, 0.35) 0%, transparent 55%);
+  filter: blur(40px);
   z-index: 1;
-}
-
-/* Gelombang Kejut Supersonik (Taylor-Sedov Blast Wave Ring) */
-.shockwave {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 4px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 0 40px 10px rgba(253, 203, 110, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.6);
   pointer-events: none;
-  opacity: 0;
-  z-index: 15;
-}
-.shockwave.active {
-  animation: sedovShock 0.85s cubic-bezier(0.08, 0.8, 0.15, 1) forwards;
-}
-@keyframes sedovShock {
-  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; border-width: 8px; }
-  60% { opacity: 0.8; border-width: 3px; }
-  100% { transform: translate(-50%, -50%) scale(45); opacity: 0; border-width: 1px; }
 }
 
 .hanabi-canvas {
@@ -65,110 +41,84 @@ html, body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  transform: translateZ(50px);
   z-index: 10;
 }
 
-/* Overlay Estetik Ciamik Soro */
+/* Overlay Estetik Nagaoka Hanabi */
 .overlay {
   position: absolute;
   top: 2rem;
   left: 2.5rem;
-  z-index: 60;
+  z-index: 50;
   color: #fff;
-  transform: translateZ(100px);
   pointer-events: none;
 }
 h1 {
-  font-size: 2.6rem;
+  font-size: 2.4rem;
   font-weight: 900;
   letter-spacing: 4px;
-  background: linear-gradient(90deg, #ffeaa7, #fdcb6e, #fab1a0, #74b9ff, #a29bfe);
+  background: linear-gradient(90deg, #ffeaa7, #fdcb6e, #fab1a0, #74b9ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 35px rgba(253, 203, 110, 0.7));
+  text-shadow: 0 0 35px rgba(253, 203, 110, 0.5);
 }
 .sub {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #dfe6e9;
   letter-spacing: 2px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
-.audio-pill {
+.pill-tag {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-  padding: 6px 16px;
-  background: rgba(253, 203, 110, 0.15);
-  border: 1px solid rgba(253, 203, 110, 0.45);
-  backdrop-filter: blur(8px);
+  gap: 8px;
+  margin-top: 10px;
+  padding: 4px 14px;
+  background: rgba(253, 203, 110, 0.12);
+  border: 1px solid rgba(253, 203, 110, 0.35);
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #fdcb6e;
-  pointer-events: auto;
   cursor: pointer;
+  pointer-events: auto;
   transition: all 0.3s ease;
 }
-.audio-pill:hover {
-  background: rgba(253, 203, 110, 0.35);
-  transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(253, 203, 110, 0.6);
+.pill-tag:hover {
+  background: rgba(253, 203, 110, 0.28);
+  transform: scale(1.04);
 }
 
-/* Siluet Kota 3D Layer */
-.city-3d {
+/* Hamparan Lampu Kota Nagaoka & Lembah Sungai Shinano */
+.nagaoka-landscape {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 24vh;
-  transform: translateZ(80px);
-  pointer-events: none;
+  height: 20vh;
   z-index: 25;
+  pointer-events: none;
 }
-.bridge-glow {
+.city-expanse {
   position: absolute;
-  bottom: 9vh;
-  left: 18vw;
-  width: 35vw;
-  height: 9vh;
-  border: 3px solid rgba(255, 100, 80, 0.85);
-  border-bottom: none;
-  border-radius: 999px 999px 0 0;
-  box-shadow: 0 0 35px rgba(255, 90, 70, 0.7), inset 0 0 20px rgba(255, 90, 70, 0.5);
-}
-.bridge-glow-2 {
-  position: absolute;
-  bottom: 9vh;
-  left: 55vw;
-  width: 28vw;
-  height: 7vh;
-  border: 3px solid rgba(255, 100, 80, 0.8);
-  border-bottom: none;
-  border-radius: 999px 999px 0 0;
-  box-shadow: 0 0 30px rgba(255, 90, 70, 0.6);
-}
-.city-lights {
-  position: absolute;
-  bottom: 3vh;
-  width: 100%;
-  height: 12vh;
-  box-shadow:
-    3vw -1vh 7px 1px #00d2ff, 9vw -3vh 9px 2px #ff4757, 15vw -1vh 6px 1px #ffa502,
-    23vw -2vh 7px 1px #2ed573, 31vw -4vh 12px 2px #fff, 45vw -2vh 7px 1px #1e90ff,
-    57vw -3vh 8px 2px #eccc68, 69vw -1vh 9px 2px #ff6b81, 81vw -4vh 14px 3px #00f59b,
-    89vw -2vh 7px 1px #ffa502, 37vw -1vh 6px 1px #70a1ff, 65vw -1vh 6px 1px #ff4757;
-  opacity: 0.95;
-}
-.river-reflection {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: 6vh;
   width: 100%;
   height: 8vh;
-  background: linear-gradient(180deg, rgba(253, 203, 110, 0.22) 0%, transparent 100%);
-  filter: blur(10px);
-  animation: riverWave 3s ease-in-out infinite alternate;
+  box-shadow:
+    2vw 0 4px 1px #fff, 6vw -1vh 5px 1px #00d2ff, 12vw 1vh 6px 2px #ffa502,
+    18vw -2vh 7px 2px #ff4757, 24vw 0 5px 1px #2ed573, 30vw -1vh 6px 1px #eccc68,
+    36vw 1vh 8px 2px #fff, 42vw -2vh 6px 1px #1e90ff, 48vw 0 7px 2px #ff6b81,
+    54vw -1vh 5px 1px #00f59b, 60vw 1vh 9px 2px #ffa502, 66vw -2vh 6px 1px #fff,
+    72vw 0 8px 2px #70a1ff, 78vw -1vh 6px 1px #ff4757, 84vw 1vh 7px 2px #eccc68,
+    90vw -2vh 8px 2px #2ed573, 96vw 0 6px 1px #00d2ff, 15vw -1vh 4px 1px #fff,
+    45vw 1vh 6px 1px #ffa502, 75vw -1vh 5px 1px #00f59b, 88vw 0 7px 2px #ff6b81;
+  opacity: 0.9;
 }
-@keyframes riverWave { 0% { opacity: 0.6; } 100% { opacity: 0.95; } }
+.foreground-forest {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 7vh;
+  background: radial-gradient(ellipse at 50% 100%, #03060a 0%, #010204 100%);
+  border-top: 1px solid rgba(255,255,255,0.04);
+}

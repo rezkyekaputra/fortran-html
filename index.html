@@ -3,38 +3,33 @@
 <head>
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-  <title>錦冠菊・神威 (Kamuro Extreme Shockwave) 🎆💥</title>
-  <link rel='stylesheet' href='fireworks.css?v=kamuro_extreme_v2'>
+  <title>長岡花火・正三尺玉 (Nagaoka Shosan-Shakudama) 🎆</title>
+  <link rel='stylesheet' href='fireworks.css?v=nagaoka_v1'>
 </head>
 <body>
-  <div class='world-3d' id='world3d'>
-    <div class='sky-ambient'></div>
-    <div class='shockwave' id='shockwave'></div>
+  <div class='stage'>
+    <div class='clouds'></div>
 
     <div class='overlay'>
-      <h1>錦冠菊・神威 · 極上花火</h1>
-      <p class='sub'>KAMURO EXTREME · SEDOV BLAST SHOCKWAVE & SUB-BASS ACOUSTIC ENGINE</p>
-      <div class='audio-pill' id='audioToggle'>
+      <h1>長岡花火 · 正三尺玉</h1>
+      <p class='sub'>NAGAOKA SHOSAN-SHAKUDAMA · 36-INCH COLOSSAL KAMURO DOME</p>
+      <div class='pill-tag' id='audioToggle'>
         <span id='audioIcon'>🔊</span>
-        <span id='audioText'>Suara Dentuman Sub-Bass: AKTIF (Klik Layar)</span>
+        <span id='audioText'>Suara Meriam Guntur Nagaoka: AKTIF (Klik Layar)</span>
       </div>
     </div>
 
     <canvas id='hanabiCanvas' class='hanabi-canvas'></canvas>
 
-    <div class='city-3d'>
-      <div class='bridge-glow'></div>
-      <div class='bridge-glow-2'></div>
-      <div class='city-lights'></div>
-      <div class='river-reflection'></div>
+    <div class='nagaoka-landscape'>
+      <div class='city-expanse'></div>
+      <div class='foreground-forest'></div>
     </div>
   </div>
 
   <script>
     const canvas = document.getElementById('hanabiCanvas');
     const ctx = canvas.getContext('2d');
-    const shockwave = document.getElementById('shockwave');
-    const world3d = document.getElementById('world3d');
 
     function resize() {
       canvas.width = window.innerWidth;
@@ -43,17 +38,7 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // 3D Mouse Parallax Tilt (Efek Kedalaman Kamera)
-    window.addEventListener('mousemove', (e) => {
-      const rotX = (e.clientY / window.innerHeight - 0.5) * -12;
-      const rotY = (e.clientX / window.innerWidth - 0.5) * 12;
-      world3d.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
-    });
-
-    // ==========================================
-    // WEB AUDIO SUB-BASS BOOM SYNTHESIZER (NOL FILE AUDIO)
-    // Menghasilkan Dentuman Meriam Menggelegar
-    // ==========================================
+    // Web Audio Synthesizer: Suara Meriam Menggelegar Nagaoka
     let audioCtx = null;
     let soundEnabled = true;
 
@@ -69,101 +54,68 @@
     function playBoomSound() {
       if (!soundEnabled || !audioCtx) return;
       const t = audioCtx.currentTime;
-      // Sub-bass thump (45Hz down to 20Hz)
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(55, t);
-      osc.frequency.exponentialRampToValueAtTime(18, t + 1.2);
-      gain.gain.setValueAtTime(0.8, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.6);
+      osc.frequency.setValueAtTime(50, t);
+      osc.frequency.exponentialRampToValueAtTime(16, t + 1.8);
+      gain.gain.setValueAtTime(0.9, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 2.2);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start(t);
-      osc.stop(t + 1.7);
-
-      // Concussive Crackle (Pink Noise burst)
-      const bufferSize = audioCtx.sampleRate * 0.4;
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const output = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
-      }
-      const whiteNoise = audioCtx.createBufferSource();
-      whiteNoise.buffer = buffer;
-      const noiseGain = audioCtx.createGain();
-      noiseGain.gain.setValueAtTime(0.35, t);
-      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-      whiteNoise.connect(noiseGain);
-      noiseGain.connect(audioCtx.destination);
-      whiteNoise.start(t);
-    }
-
-    // Trigger Sedov Shockwave Lens Ring
-    function triggerShockwave(x, y) {
-      shockwave.style.left = x + 'px';
-      shockwave.style.top = y + 'px';
-      shockwave.classList.remove('active');
-      void shockwave.offsetWidth;
-      shockwave.classList.add('active');
+      osc.stop(t + 2.3);
     }
 
     const particles = [];
-    const rockets = [];
+    let shellAscending = true;
+    let rocketY = 0;
+    let rocketTargetY = 0;
+    let rocketX = 0;
+    let rocketVy = -11;
+    const rocketTrail = [];
 
-    class Rocket {
-      constructor(x, targetY) {
-        this.x = x;
-        this.y = canvas.height;
-        this.targetY = targetY;
-        this.vy = - (13 + Math.random() * 3.5);
-        this.trail = [];
-        this.dead = false;
-      }
-      update() {
-        this.trail.push({x: this.x, y: this.y});
-        if (this.trail.length > 10) this.trail.shift();
-        this.y += this.vy;
-        this.vy *= 0.985;
-        if (this.y <= this.targetY || Math.abs(this.vy) < 1.6) {
-          this.dead = true;
-          triggerShockwave(this.x, this.y);
-          playBoomSound();
-          explodeKamuro(this.x, this.y);
-        }
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 3.5;
-        for (let i = 0; i < this.trail.length; i++) {
-          ctx.lineTo(this.trail[i].x, this.trail[i].y);
-        }
-        ctx.stroke();
-      }
+    function launchNagaokaShell() {
+      shellAscending = true;
+      rocketX = canvas.width * 0.38; // Posisi kubah mirip foto di sebelah kiri tengah
+      rocketY = canvas.height * 0.95;
+      rocketTargetY = canvas.height * 0.38; // Ketinggian detonasi
+      rocketVy = - (9.5 + Math.random() * 1.5);
+      rocketTrail.length = 0;
     }
 
-    class Particle {
-      constructor(x, y, vx, vy, color, isWillow, life) {
+    class ShosanParticle {
+      constructor(x, y, vx, vy, color, isKamuro, life) {
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
         this.color = color;
-        this.isWillow = isWillow;
+        this.isKamuro = isKamuro;
         this.life = life;
         this.maxLife = life;
         this.trail = [];
-        this.maxTrail = isWillow ? 22 : 14;
+        this.maxTrail = isKamuro ? 28 : 12;
+        this.waveFreq = 0.15 + Math.random() * 0.1;
+        this.waveAmp = isKamuro ? (0.6 + Math.random() * 0.8) : 0;
       }
       update() {
         this.trail.push({x: this.x, y: this.y});
         if (this.trail.length > this.maxTrail) this.trail.shift();
         this.x += this.vx;
         this.y += this.vy;
-        this.vx *= 0.981;
-        this.vy *= 0.981;
-        this.vy += this.isWillow ? 0.052 : 0.038;
+        if (this.isKamuro) {
+          // Fisika Kubah Nagaoka: Hambatan horizontal tinggi sehingga jatuh lurus vertikal!
+          this.vx *= 0.978; 
+          this.vy *= 0.985;
+          this.vy += 0.052; // Gravitasi menarik jatuh ke tanah
+          // Efek Shimmer / Gelombang Sulur Braided ala Foto
+          this.x += Math.sin(this.life * this.waveFreq) * this.waveAmp * 0.25;
+        } else {
+          this.vx *= 0.96;
+          this.vy *= 0.96;
+          this.vy += 0.03;
+        }
         this.life--;
       }
       draw() {
@@ -176,52 +128,71 @@
         }
         ctx.strokeStyle = this.color;
         ctx.globalAlpha = alpha;
-        ctx.lineWidth = this.isWillow ? 1.8 : 2.8;
+        ctx.lineWidth = this.isKamuro ? 1.4 : 2.5;
         ctx.lineCap = 'round';
         ctx.stroke();
         ctx.globalAlpha = 1.0;
       }
     }
 
-    function explodeKamuro(x, y) {
-      // 320 Sulur Weeping Willow Emas Padat
-      const goldCount = 320;
-      for (let i = 0; i < goldCount; i++) {
+    function explodeNagaokaDome(cx, cy) {
+      playBoomSound();
+
+      // 1. KUBAH EMAS RAKSASA (KAMURO WILLOW DOME - 380 SULUR PERSIS FOTO)
+      const domeCount = 380;
+      for (let i = 0; i < domeCount; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = 2.8 + Math.random() * 6.4;
-        const vx = Math.cos(angle) * speed * 1.45;
-        const vy = Math.sin(angle) * speed;
-        const colors = ['#ffffff', '#fff2c2', '#fed330', '#f39c12', '#e17055'];
+        // Kecepatan disesuaikan agar membentuk setengah bola kubah payung raksasa
+        const speed = 2.0 + Math.random() * 5.2;
+        // Vektor horizontal simetris & atas mengembang
+        const vx = Math.cos(angle) * speed * 1.35;
+        let vy = Math.sin(angle) * speed;
+        if (vy > 0) vy *= 0.55; // Puncak atas lebih kubah (dome shape)
+        const colors = ['#fff8db', '#fed330', '#f1c40f', '#e67e22', '#d35400'];
         const col = colors[Math.floor(Math.random() * colors.length)];
-        particles.push(new Particle(x, y, vx, vy, col, true, 115 + Math.random() * 45));
+        particles.push(new ShosanParticle(cx, cy, vx, vy, col, true, 160 + Math.random() * 50));
       }
 
-      // 52 Sulur Neon Zamrud, Magenta, Cyan Elektrik & Oranye Api
-      const jewelColors = ['#00ff88', '#ff007f', '#00e5ff', '#ff8800', '#a29bfe'];
-      const jewelCount = 52;
-      for (let i = 0; i < jewelCount; i++) {
-        const angle = (i / jewelCount) * Math.PI * 2;
-        const speed = 6.8 + Math.random() * 2.8;
-        const vx = Math.cos(angle) * speed * 1.35;
-        const vy = Math.sin(angle) * speed * 0.95;
-        const col = jewelColors[i % jewelColors.length];
-        particles.push(new Particle(x, y, vx, vy, col, false, 90 + Math.random() * 30));
+      // 2. CINCIN BINTANG PELANGI DI INTI (RAINBOW PEONY CORE PERSIS FOTO)
+      const rainbowColors = ['#00ff88', '#ff007f', '#00d2ff', '#fab1a0', '#ffeaa7', '#9b59b6'];
+      const coreCount = 75;
+      for (let i = 0; i < coreCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 1.2 + Math.random() * 2.8; // Terkonsentrasi di dalam inti
+        const vx = Math.cos(angle) * speed * 1.2;
+        const vy = Math.sin(angle) * speed * 1.2;
+        const col = rainbowColors[i % rainbowColors.length];
+        particles.push(new ShosanParticle(cx, cy, vx, vy, col, false, 75 + Math.random() * 25));
       }
     }
 
     function loop() {
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.11)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.globalCompositeOperation = 'lighter';
 
-      for (let i = rockets.length - 1; i >= 0; i--) {
-        rockets[i].update();
-        rockets[i].draw();
-        if (rockets[i].dead) rockets.splice(i, 1);
+      // Animasi Roket Menjulang Naik
+      if (shellAscending) {
+        rocketTrail.push({x: rocketX, y: rocketY});
+        if (rocketTrail.length > 8) rocketTrail.shift();
+        rocketY += rocketVy;
+        rocketVy *= 0.985;
+        ctx.beginPath();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3.5;
+        for (let i = 0; i < rocketTrail.length; i++) {
+          ctx.lineTo(rocketTrail[i].x, rocketTrail[i].y);
+        }
+        ctx.stroke();
+        if (rocketY <= rocketTargetY || Math.abs(rocketVy) < 1.4) {
+          shellAscending = false;
+          explodeNagaokaDome(rocketX, rocketY);
+        }
       }
 
+      // Render & Update Partikel Kubah
       for (let i = particles.length - 1; i >= 0; i--) {
         particles[i].update();
         particles[i].draw();
@@ -231,14 +202,8 @@
       requestAnimationFrame(loop);
     }
 
-    function launchShell() {
-      const x = canvas.width * (0.35 + Math.random() * 0.3);
-      const targetY = canvas.height * (0.2 + Math.random() * 0.18);
-      rockets.push(new Rocket(x, targetY));
-    }
-
-    launchShell();
-    setInterval(launchShell, 3200);
+    launchNagaokaShell();
+    setInterval(launchNagaokaShell, 6500);
 
     // Audio Toggle Listener
     const audioToggle = document.getElementById('audioToggle');
@@ -247,15 +212,13 @@
       initAudio();
       soundEnabled = !soundEnabled;
       document.getElementById('audioIcon').textContent = soundEnabled ? '🔊' : '🔇';
-      document.getElementById('audioText').textContent = soundEnabled ? 'Suara Dentuman Sub-Bass: AKTIF' : 'Suara: NONAKTIF';
+      document.getElementById('audioText').textContent = soundEnabled ? 'Suara Meriam Guntur Nagaoka: AKTIF' : 'Suara: NONAKTIF';
     });
 
-    // Klik Layar = Ledakan + Gelombang Kejut + Dentuman Bass Langsung!
+    // Klik Layar = Ledakan Kubah Raksasa Seketika!
     window.addEventListener('click', (e) => {
       initAudio();
-      triggerShockwave(e.clientX, e.clientY);
-      playBoomSound();
-      explodeKamuro(e.clientX, e.clientY);
+      explodeNagaokaDome(e.clientX, e.clientY);
     });
 
     loop();
