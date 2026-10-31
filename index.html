@@ -1,69 +1,239 @@
-Content-Type: text/html; charset=UTF-8
-
 <!DOCTYPE html>
 <html lang='id'>
 <head>
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-  <title>Website Fortran!</title>
+  <title>Fortran Modern Aesthetic 🌸</title>
   <style>
+    :root {
+      --bg: #1d2021;
+      --card-bg: rgba(40, 40, 40, 0.85);
+      --fg: #ebdbb2;
+      --accent: #83a598;
+      --accent-glow: rgba(131, 165, 152, 0.35);
+      --orange: #fe8019;
+      --green: #b8bb26;
+      --yellow: #fabd2f;
+      --red: #fb4934;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Courier New', monospace; background: #1d2021; color: #ebdbb2; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
-    .card { background: #282828; border: 2px solid #458588; border-radius: 8px; padding: 2rem; max-width: 600px; width: 100%; box-shadow: 0 0 30px rgba(69,133,136,0.3); }
-    h1 { color: #83a598; font-size: 1.8rem; margin-bottom: 0.5rem; }
-    .badge { display: inline-block; background: #d65d0e; color: #fbf1c7; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 1.5rem; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th { background: #3c3836; color: #fabd2f; padding: 10px; text-align: left; border-bottom: 2px solid #504945; }
-    td { padding: 10px; border-bottom: 1px solid #3c3836; }
-    tr:hover td { background: #32302f; }
-    .nilai { color: #b8bb26; font-weight: bold; }
-    .footer { margin-top: 1.5rem; color: #928374; font-size: 0.85rem; text-align: center; }
-    .footer span { color: #d3869b; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Fira Code', monospace;
+      background-color: var(--bg);
+      background-image: radial-gradient(#32302f 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--fg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 720px;
+      animation: fadeIn 0.8s ease-out;
+    }
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(131, 165, 152, 0.25);
+      border-radius: 16px;
+      padding: 2.2rem;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 35px var(--accent-glow);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 50px var(--accent-glow);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    h1 {
+      font-size: 1.75rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.5px;
+    }
+    .pulse-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(184, 187, 38, 0.15);
+      border: 1px solid var(--green);
+      color: var(--green);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse 1.8s infinite;
+    }
+    .desc {
+      color: #a89984;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 1.8rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      margin-bottom: 1.5rem;
+    }
+    th {
+      color: var(--yellow);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 14px;
+      text-align: left;
+    }
+    tbody tr {
+      background: rgba(60, 56, 54, 0.6);
+      transition: all 0.25s ease;
+    }
+    tbody tr:hover {
+      background: rgba(80, 73, 69, 0.85);
+      transform: scale(1.015) translateX(4px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    tbody td {
+      padding: 12px 14px;
+      font-size: 0.92rem;
+    }
+    tbody tr td:first-child { border-radius: 8px 0 0 8px; }
+    tbody tr td:last-child { border-radius: 0 8px 8px 0; }
+    .matkul { color: #d5c4a1; font-size: 0.82rem; display: block; margin-top: 2px; }
+    .bar-container {
+      background: #504945;
+      border-radius: 999px;
+      height: 6px;
+      width: 100px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--yellow), var(--green));
+      transition: width 1s ease-in-out;
+    }
+    .score-badge {
+      font-weight: 700;
+      color: var(--green);
+    }
+    .stats-box {
+      background: rgba(50, 48, 47, 0.7);
+      border-left: 4px solid var(--orange);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .stats-val {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--yellow);
+    }
+    .footer {
+      margin-top: 1.8rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #928374;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(184, 187, 38, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(184, 187, 38, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(184, 187, 38, 0); }
+    }
   </style>
 </head>
 <body>
-  <div class='card'>
-    <h1>🖥️ Website dari Fortran!</h1>
-    <span class='badge'>GNU Fortran 14.3.1 · CGI</span>
-    <p>Ini adalah halaman HTML yang di-generate langsung oleh program <strong>Fortran</strong>.</p>
-    <table>
-      <thead>
-        <tr><th>#</th><th>Nama</th><th>Nilai</th><th>Grade</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>Budi</td>
-          <td class='nilai'> 92.5</td>
-          <td>🏆 A</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Siti</td>
-          <td class='nilai'> 87.0</td>
-          <td>✅ B</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Andi</td>
-          <td class='nilai'> 95.5</td>
-          <td>🏆 A</td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>Rina</td>
-          <td class='nilai'> 78.0</td>
-          <td>📝 C</td>
-        </tr>
-        <tr>
-          <td>5</td>
-          <td>Doni</td>
-          <td class='nilai'> 88.5</td>
-          <td>✅ B</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class='footer'>Generated by <span>Fortran</span> · Gruvbox Dark Theme · 2026</div>
+  <div class='container'>
+    <div class='card'>
+      <div class='header'>
+        <h1>⚡ Fortran Engine</h1>
+        <div class='pulse-badge'>
+          <span class='dot'></span>
+          <span>Online · GNU Fortran 14.3.1</span>
+        </div>
+      </div>
+      <p class='desc'>
+        Halaman interaktif modern dengan CSS glassmorphism & animasi hover,
+        dihasilkan langsung dari instruksi teks dan kalkulasi biner <strong>Fortran</strong>.
+      </p>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Mahasiswa & Matkul</th><th>Skor (CSS Bar)</th><th>Grade</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style='color: var(--orange); font-weight: bold;'>01</td>
+            <td><strong>Budi Santoso</strong><span class='matkul'>Metode Numerik</span></td>
+            <td><span class='score-badge'> 94.5</span><div class='bar-container'><div class='bar-fill' style='width:  94.5%;'></div></div></td>
+            <td><span style='color: var(--green); font-weight: bold;'>🏆 Grade A</span></td>
+          </tr>
+          <tr>
+            <td style='color: var(--orange); font-weight: bold;'>02</td>
+            <td><strong>Siti Nurhaliza</strong><span class='matkul'>Fisika Komputasi</span></td>
+            <td><span class='score-badge'> 88.0</span><div class='bar-container'><div class='bar-fill' style='width:  88.0%;'></div></div></td>
+            <td><span style='color: var(--yellow); font-weight: bold;'>✨ Grade B</span></td>
+          </tr>
+          <tr>
+            <td style='color: var(--orange); font-weight: bold;'>03</td>
+            <td><strong>Andi Pratama</strong><span class='matkul'>Arsitektur Komputer</span></td>
+            <td><span class='score-badge'> 96.5</span><div class='bar-container'><div class='bar-fill' style='width:  96.5%;'></div></div></td>
+            <td><span style='color: var(--green); font-weight: bold;'>🏆 Grade A</span></td>
+          </tr>
+          <tr>
+            <td style='color: var(--orange); font-weight: bold;'>04</td>
+            <td><strong>Rina Marlina</strong><span class='matkul'>Struktur Data</span></td>
+            <td><span class='score-badge'> 79.5</span><div class='bar-container'><div class='bar-fill' style='width:  79.5%;'></div></div></td>
+            <td><span style='color: var(--orange); font-weight: bold;'>📝 Grade C</span></td>
+          </tr>
+          <tr>
+            <td style='color: var(--orange); font-weight: bold;'>05</td>
+            <td><strong>Doni Kusuma</strong><span class='matkul'>Kalkulus Lanjut</span></td>
+            <td><span class='score-badge'> 89.0</span><div class='bar-container'><div class='bar-fill' style='width:  89.0%;'></div></div></td>
+            <td><span style='color: var(--yellow); font-weight: bold;'>✨ Grade B</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class='stats-box'>
+        <div>
+          <div style='font-size: 0.85rem; color: #a89984;'>Rata-rata Kelas (Dihitung oleh Fortran CPU)</div>
+          <div style='font-size: 0.78rem; color: #7c6f64;'>Formula: &Sigma;(x) / N</div>
+        </div>
+        <div class='stats-val'>89.50 / 100.0</div>
+      </div>
+      <div class='footer'>
+        Crafted with 🌸 by <a href='https://github.com/rezkyekaputra' target='_blank'>Cefneal</a> · Pure Fortran Static Web
+      </div>
+    </div>
   </div>
 </body>
 </html>
