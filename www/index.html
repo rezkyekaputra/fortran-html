@@ -4,7 +4,7 @@
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
   <title>錦冠菊・神威 (Kamuro Extreme Shockwave) 🎆💥</title>
-  <link rel='stylesheet' href='fireworks.css?v=kamuro_extreme'>
+  <link rel='stylesheet' href='fireworks.css?v=kamuro_extreme_v2'>
 </head>
 <body>
   <div class='world-3d' id='world3d'>
@@ -47,7 +47,7 @@
     window.addEventListener('mousemove', (e) => {
       const rotX = (e.clientY / window.innerHeight - 0.5) * -12;
       const rotY = (e.clientX / window.innerWidth - 0.5) * 12;
-      world3d.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)';
+      world3d.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
     });
 
     // ==========================================
@@ -101,8 +101,8 @@
 
     // Trigger Sedov Shockwave Lens Ring
     function triggerShockwave(x, y) {
-      shockwave.style.left = `${x}px`;
-      shockwave.style.top = `${y}px`;
+      shockwave.style.left = x + 'px';
+      shockwave.style.top = y + 'px';
       shockwave.classList.remove('active');
       void shockwave.offsetWidth;
       shockwave.classList.add('active');
